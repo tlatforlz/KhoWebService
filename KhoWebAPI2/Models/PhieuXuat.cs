@@ -10,9 +10,9 @@ namespace KhoWebAPI2.Models
         [Key]
         public int Id { get; set; }
         public DateTime ngayNhap { get; set; }
-        public int tongTien { get; set; }
-
+        public double tongTien { get; set; }
         public int NhanVienId { get; set; }
         public NhanVien NhanVien { get; set; }
+        public virtual ICollection<ChiTietPhieuXuat> ChiTietPhieuXuats { get; set; }
     }
 }

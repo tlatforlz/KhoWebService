@@ -41,5 +41,7 @@ namespace KhoWebAPI2.Models
         public System.Data.Entity.DbSet<KhoWebAPI2.Models.PhieuXuat> PhieuXuats { get; set; }
 
         public System.Data.Entity.DbSet<KhoWebAPI2.Models.ChiTietPhieuXuat> ChiTietPhieuXuats { get; set; }
+
+        public System.Data.Entity.DbSet<KhoWebAPI2.Models.GiaTien> GiaTiens { get; set; }
     }
 }
