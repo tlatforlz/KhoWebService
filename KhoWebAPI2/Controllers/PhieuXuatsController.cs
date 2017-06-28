@@ -9,25 +9,27 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
+using KhoWebAPI2.DAL;
 using KhoWebAPI2.Models;
 
 namespace KhoWebAPI2.Controllers
 {
     public class PhieuXuatsController : ApiController
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
-
+       // private ApplicationDbContext db = new ApplicationDbContext();
+       private UnitOfWord unitOfWork = new UnitOfWord();
+        
         // GET: api/PhieuXuats
-        public IQueryable<PhieuXuat> GetPhieuXuats()
+        public IEnumerable<PhieuXuat> GetPhieuXuats()
         {
-            return db.PhieuXuats;
+            return unitOfWork.PhieuXuatRepository.Get();      
         }
 
         // GET: api/PhieuXuats/5
         [ResponseType(typeof(PhieuXuat))]
-        public async Task<IHttpActionResult> GetPhieuXuat(int id)
+        public IHttpActionResult GetPhieuXuat(int id)
         {
-            PhieuXuat phieuXuat = await db.PhieuXuats.FindAsync(id);
+            PhieuXuat phieuXuat = unitOfWork.PhieuXuatRepository.GetByID(id);
             if (phieuXuat == null)
             {
                 return NotFound();
@@ -38,7 +40,7 @@ namespace KhoWebAPI2.Controllers
 
         // PUT: api/PhieuXuats/5
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutPhieuXuat(int id, PhieuXuat phieuXuat)
+        public IHttpActionResult PutPhieuXuat(int id, PhieuXuat phieuXuat)
         {
             if (!ModelState.IsValid)
             {
@@ -50,11 +52,11 @@ namespace KhoWebAPI2.Controllers
                 return BadRequest();
             }
 
-            db.Entry(phieuXuat).State = EntityState.Modified;
+            unitOfWork.PhieuXuatRepository.Update(phieuXuat);
 
             try
             {
-                await db.SaveChangesAsync();
+                unitOfWork.PhieuXuatRepository.Save();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -73,31 +75,31 @@ namespace KhoWebAPI2.Controllers
 
         // POST: api/PhieuXuats
         [ResponseType(typeof(PhieuXuat))]
-        public async Task<IHttpActionResult> PostPhieuXuat(PhieuXuat phieuXuat)
+        public IHttpActionResult PostPhieuXuat(PhieuXuat phieuXuat)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            db.PhieuXuats.Add(phieuXuat);
-            await db.SaveChangesAsync();
+            unitOfWork.PhieuXuatRepository.Insert(phieuXuat);
+            unitOfWork.PhieuXuatRepository.Save();
 
             return CreatedAtRoute("DefaultApi", new { id = phieuXuat.Id }, phieuXuat);
         }
 
         // DELETE: api/PhieuXuats/5
         [ResponseType(typeof(PhieuXuat))]
-        public async Task<IHttpActionResult> DeletePhieuXuat(int id)
+        public IHttpActionResult DeletePhieuXuat(int id)
         {
-            PhieuXuat phieuXuat = await db.PhieuXuats.FindAsync(id);
+            PhieuXuat phieuXuat = unitOfWork.PhieuXuatRepository.GetByID(id);
             if (phieuXuat == null)
             {
                 return NotFound();
             }
 
-            db.PhieuXuats.Remove(phieuXuat);
-            await db.SaveChangesAsync();
+            unitOfWork.PhieuXuatRepository.Delete(phieuXuat);
+            unitOfWork.PhieuXuatRepository.Save();
 
             return Ok(phieuXuat);
         }
@@ -106,14 +108,15 @@ namespace KhoWebAPI2.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                unitOfWork.PhieuXuatRepository.Dispose();
             }
             base.Dispose(disposing);
         }
 
         private bool PhieuXuatExists(int id)
         {
-            return db.PhieuXuats.Count(e => e.Id == id) > 0;
+            return true;
         }
     }
+
 }

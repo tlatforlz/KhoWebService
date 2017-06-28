@@ -242,12 +242,26 @@
     <Compile Include="Controllers\PhieuNhapsController.cs" />
     <Compile Include="Controllers\PhieuXuatsController.cs" />
     <Compile Include="Controllers\SanPhamsController.cs" />
+    <Compile Include="DAL\GenericRepository.cs" />
+    <Compile Include="DAL\UnitOfWord.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201706260941413_Initial.cs" />
     <Compile Include="Migrations\201706260941413_Initial.Designer.cs">
       <DependentUpon>201706260941413_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201706271629253_NhanVienModel.cs" />
+    <Compile Include="Migrations\201706271629253_NhanVienModel.Designer.cs">
+      <DependentUpon>201706271629253_NhanVienModel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201706271650215_SanPhamModel.cs" />
+    <Compile Include="Migrations\201706271650215_SanPhamModel.Designer.cs">
+      <DependentUpon>201706271650215_SanPhamModel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201706272312555_InitialCreate.cs" />
+    <Compile Include="Migrations\201706272312555_InitialCreate.Designer.cs">
+      <DependentUpon>201706272312555_InitialCreate.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
@@ -337,6 +351,15 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201706260941413_Initial.resx">
       <DependentUpon>201706260941413_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706271629253_NhanVienModel.resx">
+      <DependentUpon>201706271629253_NhanVienModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706271650215_SanPhamModel.resx">
+      <DependentUpon>201706271650215_SanPhamModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706272312555_InitialCreate.resx">
+      <DependentUpon>201706272312555_InitialCreate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -9,25 +9,27 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
+using KhoWebAPI2.DAL;
 using KhoWebAPI2.Models;
 
 namespace KhoWebAPI2.Controllers
 {
+    [RoutePrefix("Sach")]
     public class GiaTiensController : ApiController
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
-
+        //private ApplicationDbContext db = new ApplicationDbContext();
+        private UnitOfWord unitOfWork = new UnitOfWord();
         // GET: api/GiaTiens
-        public IQueryable<GiaTien> GetGiaTiens()
+        public IEnumerable<GiaTien> GetGiaTiens()
         {
-            return db.GiaTiens;
+            return unitOfWork.GiaTienRepository.Get();
         }
-
+        [Route]
         // GET: api/GiaTiens/5
         [ResponseType(typeof(GiaTien))]
-        public async Task<IHttpActionResult> GetGiaTien(int id)
+        public IHttpActionResult GetGiaTien(int id)
         {
-            GiaTien giaTien = await db.GiaTiens.FindAsync(id);
+            GiaTien giaTien = unitOfWork.GiaTienRepository.GetByID(id);
             if (giaTien == null)
             {
                 return NotFound();
@@ -38,7 +40,7 @@ namespace KhoWebAPI2.Controllers
 
         // PUT: api/GiaTiens/5
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutGiaTien(int id, GiaTien giaTien)
+        public IHttpActionResult PutGiaTien(int id, GiaTien giaTien)
         {
             if (!ModelState.IsValid)
             {
@@ -50,11 +52,11 @@ namespace KhoWebAPI2.Controllers
                 return BadRequest();
             }
 
-            db.Entry(giaTien).State = EntityState.Modified;
+            unitOfWork.GiaTienRepository.Update(giaTien);
 
             try
             {
-                await db.SaveChangesAsync();
+                unitOfWork.GiaTienRepository.Save();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -73,31 +75,31 @@ namespace KhoWebAPI2.Controllers
 
         // POST: api/GiaTiens
         [ResponseType(typeof(GiaTien))]
-        public async Task<IHttpActionResult> PostGiaTien(GiaTien giaTien)
+        public IHttpActionResult PostGiaTien(GiaTien giaTien)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            db.GiaTiens.Add(giaTien);
-            await db.SaveChangesAsync();
+            unitOfWork.GiaTienRepository.Insert(giaTien);
+            unitOfWork.GiaTienRepository.Save();
 
             return CreatedAtRoute("DefaultApi", new { id = giaTien.Id }, giaTien);
         }
 
         // DELETE: api/GiaTiens/5
         [ResponseType(typeof(GiaTien))]
-        public async Task<IHttpActionResult> DeleteGiaTien(int id)
+        public IHttpActionResult DeleteGiaTien(int id)
         {
-            GiaTien giaTien = await db.GiaTiens.FindAsync(id);
+            GiaTien giaTien = unitOfWork.GiaTienRepository.GetByID(id);
             if (giaTien == null)
             {
                 return NotFound();
             }
 
-            db.GiaTiens.Remove(giaTien);
-            await db.SaveChangesAsync();
+            unitOfWork.GiaTienRepository.Delete(giaTien);
+            unitOfWork.GiaTienRepository.Save();
 
             return Ok(giaTien);
         }
@@ -106,14 +108,14 @@ namespace KhoWebAPI2.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                unitOfWork.GiaTienRepository.Dispose();
             }
             base.Dispose(disposing);
         }
 
         private bool GiaTienExists(int id)
         {
-            return db.GiaTiens.Count(e => e.Id == id) > 0;
+            return true;
         }
     }
 }

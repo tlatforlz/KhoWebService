@@ -12,7 +12,7 @@ namespace KhoWebAPI2.Models
         public int Id { get; set; }
         [Required]
         public int SanPhamId { get; set; }
-        public virtual SanPham SanPham { get; set; }
+       // public virtual SanPham SanPham { get; set; }
         public DateTime NgayCapNhap { get; set; }
         public double giaTien;
     }

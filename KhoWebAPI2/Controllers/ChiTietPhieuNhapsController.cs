@@ -9,25 +9,26 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
+using KhoWebAPI2.DAL;
 using KhoWebAPI2.Models;
 
 namespace KhoWebAPI2.Controllers
 {
     public class ChiTietPhieuNhapsController : ApiController
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
-
+        // private ApplicationDbContext db = new ApplicationDbContext();
+        private UnitOfWord unitOfWork = new UnitOfWord();
         // GET: api/ChiTietPhieuNhaps
-        public IQueryable<ChiTietPhieuNhap> GetChiTietPhieuNhaps()
+        public IEnumerable<ChiTietPhieuNhap> GetChiTietPhieuNhaps()
         {
-            return db.ChiTietPhieuNhaps;
+            return unitOfWork.ChiTietPhieuNhapRepository.Get();
         }
 
         // GET: api/ChiTietPhieuNhaps/5
         [ResponseType(typeof(ChiTietPhieuNhap))]
-        public async Task<IHttpActionResult> GetChiTietPhieuNhap(int id)
+        public IHttpActionResult GetChiTietPhieuNhap(int id)
         {
-            ChiTietPhieuNhap chiTietPhieuNhap = await db.ChiTietPhieuNhaps.FindAsync(id);
+            ChiTietPhieuNhap chiTietPhieuNhap = unitOfWork.ChiTietPhieuNhapRepository.GetByID(id);
             if (chiTietPhieuNhap == null)
             {
                 return NotFound();
@@ -38,7 +39,7 @@ namespace KhoWebAPI2.Controllers
 
         // PUT: api/ChiTietPhieuNhaps/5
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutChiTietPhieuNhap(int id, ChiTietPhieuNhap chiTietPhieuNhap)
+        public IHttpActionResult PutChiTietPhieuNhap(int id, ChiTietPhieuNhap chiTietPhieuNhap)
         {
             if (!ModelState.IsValid)
             {
@@ -50,11 +51,11 @@ namespace KhoWebAPI2.Controllers
                 return BadRequest();
             }
 
-            db.Entry(chiTietPhieuNhap).State = EntityState.Modified;
+            unitOfWork.ChiTietPhieuNhapRepository.Update(chiTietPhieuNhap);
 
             try
             {
-                await db.SaveChangesAsync();
+                unitOfWork.ChiTietPhieuNhapRepository.Save();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -73,31 +74,31 @@ namespace KhoWebAPI2.Controllers
 
         // POST: api/ChiTietPhieuNhaps
         [ResponseType(typeof(ChiTietPhieuNhap))]
-        public async Task<IHttpActionResult> PostChiTietPhieuNhap(ChiTietPhieuNhap chiTietPhieuNhap)
+        public IHttpActionResult PostChiTietPhieuNhap(ChiTietPhieuNhap chiTietPhieuNhap)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            db.ChiTietPhieuNhaps.Add(chiTietPhieuNhap);
-            await db.SaveChangesAsync();
+            unitOfWork.ChiTietPhieuNhapRepository.Insert(chiTietPhieuNhap);
+            unitOfWork.ChiTietPhieuNhapRepository.Save();
 
             return CreatedAtRoute("DefaultApi", new { id = chiTietPhieuNhap.Id }, chiTietPhieuNhap);
         }
 
         // DELETE: api/ChiTietPhieuNhaps/5
         [ResponseType(typeof(ChiTietPhieuNhap))]
-        public async Task<IHttpActionResult> DeleteChiTietPhieuNhap(int id)
+        public IHttpActionResult DeleteChiTietPhieuNhap(int id)
         {
-            ChiTietPhieuNhap chiTietPhieuNhap = await db.ChiTietPhieuNhaps.FindAsync(id);
+            ChiTietPhieuNhap chiTietPhieuNhap = unitOfWork.ChiTietPhieuNhapRepository.GetByID(id);
             if (chiTietPhieuNhap == null)
             {
                 return NotFound();
             }
 
-            db.ChiTietPhieuNhaps.Remove(chiTietPhieuNhap);
-            await db.SaveChangesAsync();
+            unitOfWork.ChiTietPhieuNhapRepository.Delete(chiTietPhieuNhap);
+            unitOfWork.ChiTietPhieuNhapRepository.Save();
 
             return Ok(chiTietPhieuNhap);
         }
@@ -106,14 +107,14 @@ namespace KhoWebAPI2.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                unitOfWork.ChiTietPhieuNhapRepository.Dispose();
             }
             base.Dispose(disposing);
         }
 
         private bool ChiTietPhieuNhapExists(int id)
         {
-            return db.ChiTietPhieuNhaps.Count(e => e.Id == id) > 0;
+            return true;
         }
     }
 }

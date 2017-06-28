@@ -9,25 +9,26 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
+using KhoWebAPI2.DAL;
 using KhoWebAPI2.Models;
 
 namespace KhoWebAPI2.Controllers
 {
     public class PhieuNhapsController : ApiController
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
-
+        //  private ApplicationDbContext db = new ApplicationDbContext();
+        private UnitOfWord unitOfWork = new UnitOfWord();
         // GET: api/PhieuNhaps
-        public IQueryable<PhieuNhap> GetPhieuNhaps()
+        public IEnumerable<PhieuNhap> GetPhieuNhaps()
         {
-            return db.PhieuNhaps;
+            return unitOfWork.PhieuNhapRepository.Get();
         }
 
         // GET: api/PhieuNhaps/5
         [ResponseType(typeof(PhieuNhap))]
-        public async Task<IHttpActionResult> GetPhieuNhap(int id)
+        public IHttpActionResult GetPhieuNhap(int id)
         {
-            PhieuNhap phieuNhap = await db.PhieuNhaps.FindAsync(id);
+            PhieuNhap phieuNhap = unitOfWork.PhieuNhapRepository.GetByID(id);
             if (phieuNhap == null)
             {
                 return NotFound();
@@ -38,7 +39,7 @@ namespace KhoWebAPI2.Controllers
 
         // PUT: api/PhieuNhaps/5
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutPhieuNhap(int id, PhieuNhap phieuNhap)
+        public IHttpActionResult PutPhieuNhap(int id, PhieuNhap phieuNhap)
         {
             if (!ModelState.IsValid)
             {
@@ -50,11 +51,11 @@ namespace KhoWebAPI2.Controllers
                 return BadRequest();
             }
 
-            db.Entry(phieuNhap).State = EntityState.Modified;
+            unitOfWork.PhieuNhapRepository.Update(phieuNhap);
 
             try
             {
-                await db.SaveChangesAsync();
+                unitOfWork.PhieuNhapRepository.Save();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -80,8 +81,8 @@ namespace KhoWebAPI2.Controllers
                 return BadRequest(ModelState);
             }
 
-            db.PhieuNhaps.Add(phieuNhap);
-            await db.SaveChangesAsync();
+            unitOfWork.PhieuNhapRepository.Insert(phieuNhap);
+            unitOfWork.PhieuNhapRepository.Save();
 
             return CreatedAtRoute("DefaultApi", new { id = phieuNhap.Id }, phieuNhap);
         }
@@ -90,14 +91,14 @@ namespace KhoWebAPI2.Controllers
         [ResponseType(typeof(PhieuNhap))]
         public async Task<IHttpActionResult> DeletePhieuNhap(int id)
         {
-            PhieuNhap phieuNhap = await db.PhieuNhaps.FindAsync(id);
+            PhieuNhap phieuNhap = unitOfWork.PhieuNhapRepository.GetByID(id);
             if (phieuNhap == null)
             {
                 return NotFound();
             }
 
-            db.PhieuNhaps.Remove(phieuNhap);
-            await db.SaveChangesAsync();
+            unitOfWork.PhieuNhapRepository.Delete(phieuNhap);
+            unitOfWork.PhieuNhapRepository.Save();
 
             return Ok(phieuNhap);
         }
@@ -106,14 +107,14 @@ namespace KhoWebAPI2.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                unitOfWork.PhieuNhapRepository.Dispose();
             }
             base.Dispose(disposing);
         }
 
         private bool PhieuNhapExists(int id)
         {
-            return db.PhieuNhaps.Count(e => e.Id == id) > 0;
+            return true;
         }
     }
 }

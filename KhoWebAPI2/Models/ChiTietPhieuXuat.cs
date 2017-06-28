@@ -11,9 +11,9 @@ namespace KhoWebAPI2.Models
         [Key]
         public int Id { get; set; }
         public int SanPhamId { get; set; }
-        public virtual SanPham SanPham { get; set; }
+      //  public virtual SanPham SanPham { get; set; }
         public int PhieuNhapId { get; set; }
-        public virtual PhieuXuat PhieuXuat { get; set; }
+    //    public virtual PhieuXuat PhieuXuat { get; set; }
         public double giaTien { get; set; }
 
         

@@ -9,25 +9,28 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
+using KhoWebAPI2.DAL;
 using KhoWebAPI2.Models;
 
 namespace KhoWebAPI2.Controllers
 {
     public class NhanViensController : ApiController
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
+        // private ApplicationDbContext db = new ApplicationDbContext();
 
-        // GET: api/NhanViens
-        public IQueryable<NhanVien> GetNhanViens()
+        private UnitOfWord unitOfWork = new UnitOfWord();
+
+        // GET: api/PhieuXuats
+        public IEnumerable<NhanVien> GetNhanViens()
         {
-            return db.NhanViens;
+            return unitOfWork.NhanVienRepository.Get();
         }
 
         // GET: api/NhanViens/5
         [ResponseType(typeof(NhanVien))]
-        public async Task<IHttpActionResult> GetNhanVien(int id)
+        public IHttpActionResult GetNhanVien(int id)
         {
-            NhanVien nhanVien = await db.NhanViens.FindAsync(id);
+            NhanVien nhanVien = unitOfWork.NhanVienRepository.GetByID(id);
             if (nhanVien == null)
             {
                 return NotFound();
@@ -38,7 +41,7 @@ namespace KhoWebAPI2.Controllers
 
         // PUT: api/NhanViens/5
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutNhanVien(int id, NhanVien nhanVien)
+        public IHttpActionResult PutNhanVien(int id, NhanVien nhanVien)
         {
             if (!ModelState.IsValid)
             {
@@ -50,11 +53,11 @@ namespace KhoWebAPI2.Controllers
                 return BadRequest();
             }
 
-            db.Entry(nhanVien).State = EntityState.Modified;
+            unitOfWork.NhanVienRepository.Update(nhanVien);
 
             try
             {
-                await db.SaveChangesAsync();
+                unitOfWork.NhanVienRepository.Save();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -73,31 +76,31 @@ namespace KhoWebAPI2.Controllers
 
         // POST: api/NhanViens
         [ResponseType(typeof(NhanVien))]
-        public async Task<IHttpActionResult> PostNhanVien(NhanVien nhanVien)
+        public IHttpActionResult PostNhanVien(NhanVien nhanVien)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            db.NhanViens.Add(nhanVien);
-            await db.SaveChangesAsync();
+            unitOfWork.NhanVienRepository.Insert(nhanVien);
+            unitOfWork.NhanVienRepository.Save();
 
             return CreatedAtRoute("DefaultApi", new { id = nhanVien.Id }, nhanVien);
         }
 
         // DELETE: api/NhanViens/5
         [ResponseType(typeof(NhanVien))]
-        public async Task<IHttpActionResult> DeleteNhanVien(int id)
+        public IHttpActionResult DeleteNhanVien(int id)
         {
-            NhanVien nhanVien = await db.NhanViens.FindAsync(id);
+            NhanVien nhanVien = unitOfWork.NhanVienRepository.GetByID(id);
             if (nhanVien == null)
             {
                 return NotFound();
             }
 
-            db.NhanViens.Remove(nhanVien);
-            await db.SaveChangesAsync();
+            unitOfWork.NhanVienRepository.Delete(nhanVien);
+            unitOfWork.NhanVienRepository.Save();
 
             return Ok(nhanVien);
         }
@@ -106,14 +109,14 @@ namespace KhoWebAPI2.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                unitOfWork.NhanVienRepository.Dispose();
             }
             base.Dispose(disposing);
         }
 
         private bool NhanVienExists(int id)
         {
-            return db.NhanViens.Count(e => e.Id == id) > 0;
+            return true;
         }
     }
 }
