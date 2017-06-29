@@ -244,6 +244,12 @@
     <Compile Include="Controllers\SanPhamsController.cs" />
     <Compile Include="DAL\GenericRepository.cs" />
     <Compile Include="DAL\UnitOfWord.cs" />
+    <Compile Include="DTO\ChiTietPhieuNhapDTO.cs" />
+    <Compile Include="DTO\ChiTietPhieuXuatDTO.cs" />
+    <Compile Include="DTO\GiaTienDTO.cs" />
+    <Compile Include="DTO\NhanvienDTO.cs" />
+    <Compile Include="DTO\PhieuNhapDTO.cs" />
+    <Compile Include="DTO\SanPhamDTO.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -263,16 +269,25 @@
     <Compile Include="Migrations\201706272312555_InitialCreate.Designer.cs">
       <DependentUpon>201706272312555_InitialCreate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201706280449583_Update-Database.cs" />
+    <Compile Include="Migrations\201706280449583_Update-Database.Designer.cs">
+      <DependentUpon>201706280449583_Update-Database.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\AuditableEntity.cs" />
     <Compile Include="Models\ChiTietPhieuNhap.cs" />
     <Compile Include="Models\ChiTietPhieuXuat.cs" />
+    <Compile Include="Models\Entity.cs" />
     <Compile Include="Models\GiaTien.cs" />
+    <Compile Include="Models\IAuditableEntity.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\IEntity.cs" />
     <Compile Include="Models\NhanVien.cs" />
     <Compile Include="Models\PhieuNhap.cs" />
     <Compile Include="Models\PhieuXuat.cs" />
+    <Compile Include="DTO\PhieuXuatDTO.cs" />
     <Compile Include="Models\SanPham.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\ApplicationOAuthProvider.cs" />
@@ -360,6 +375,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201706272312555_InitialCreate.resx">
       <DependentUpon>201706272312555_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706280449583_Update-Database.resx">
+      <DependentUpon>201706280449583_Update-Database.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

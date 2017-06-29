@@ -6,16 +6,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace KhoWebAPI2.Models
 {
-    public class ChiTietPhieuXuat
+    public class ChiTietPhieuXuat:Entity<int>
     {
-        [Key]
-        public int Id { get; set; }
+     //  [Key]
+        //public int Id { get; set; }
         public int SanPhamId { get; set; }
-      //  public virtual SanPham SanPham { get; set; }
-        public int PhieuNhapId { get; set; }
-    //    public virtual PhieuXuat PhieuXuat { get; set; }
+        public  SanPham SanPham { get; set; }
+        public int PhieuXuatId { get; set; }
+       public  PhieuXuat PhieuXuat { get; set; }
         public double giaTien { get; set; }
-
-        
+      
     }
 }

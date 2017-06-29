@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using KhoWebAPI2.DTO;
 using KhoWebAPI2.Models;
 
 namespace KhoWebAPI2.DAL
@@ -16,7 +17,7 @@ namespace KhoWebAPI2.DAL
         private GenericRepository<PhieuNhap> phieuNhapRepository;
         private GenericRepository<ChiTietPhieuNhap> chiTietPhieuNhapRepository;
         private GenericRepository<ChiTietPhieuXuat> chiTietPhieuXuatRepository;
-
+        private GenericRepository<PhieuXuatDTO> phieuXuatDtoRepository;
 
         public GenericRepository<PhieuXuat> PhieuXuatRepository
         {
@@ -102,6 +103,18 @@ namespace KhoWebAPI2.DAL
                     this.chiTietPhieuXuatRepository = new GenericRepository<ChiTietPhieuXuat>(db);
                 }
                 return chiTietPhieuXuatRepository;
+            }
+        }
+        public GenericRepository<PhieuXuatDTO> PhieuXuatDTORepository
+        {
+            get
+            {
+
+                if (this.phieuXuatDtoRepository == null)
+                {
+                    this.phieuXuatDtoRepository = new GenericRepository<PhieuXuatDTO>(db);
+                }
+                return phieuXuatDtoRepository;
             }
         }
         public void Save()

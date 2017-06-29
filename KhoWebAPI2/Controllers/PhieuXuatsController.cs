@@ -10,34 +10,52 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using KhoWebAPI2.DAL;
+using KhoWebAPI2.DTO;
 using KhoWebAPI2.Models;
 
 namespace KhoWebAPI2.Controllers
-{
+{  
+   // [RoutePrefix("PhieuXuat")]
     public class PhieuXuatsController : ApiController
-    {
-       // private ApplicationDbContext db = new ApplicationDbContext();
-       private UnitOfWord unitOfWork = new UnitOfWord();
+    {   
         
-        // GET: api/PhieuXuats
-        public IEnumerable<PhieuXuat> GetPhieuXuats()
-        {
-            return unitOfWork.PhieuXuatRepository.Get();      
-        }
+        //  private ApplicationDbContext db = new ApplicationDbContext();
+        private UnitOfWord unitOfWork = new UnitOfWord();
 
+      //  [Route("")]
+        // GET: api/PhieuXuats
+        public IEnumerable<PhieuXuatDTO> GetPhieuXuats()
+        {
+            var phieuxuat = from a in unitOfWork.PhieuXuatRepository.Get()
+                            select new PhieuXuatDTO
+                            {
+                                Id = a.Id,
+                                NhanVienId = a.NhanVienId,
+                                TongTien = a.TongTien
+                            };
+            return phieuxuat ;
+        }
+       // [Route("PhieuXuat/{id:int}")]
         // GET: api/PhieuXuats/5
-        [ResponseType(typeof(PhieuXuat))]
+        [ResponseType(typeof(PhieuXuatDTO))]
         public IHttpActionResult GetPhieuXuat(int id)
         {
-            PhieuXuat phieuXuat = unitOfWork.PhieuXuatRepository.GetByID(id);
-            if (phieuXuat == null)
+            var phieuXuat = unitOfWork.PhieuXuatRepository.Get(includeProperties: "ChiTietPhieuXuats");
+
+            return Ok(phieuXuat);
+        }
+        [Route("api/PhieuXuats/{id:int}/chiTietPhieuXuat")]
+        [ResponseType(typeof(PhieuXuat))]
+        public IHttpActionResult GetChiTietPhieuXuat(int id)
+        {
+            ChiTietPhieuXuat chiTietPhieuXuat = unitOfWork.ChiTietPhieuXuatRepository.GetByID(id);
+            if (chiTietPhieuXuat == null)
             {
                 return NotFound();
             }
 
-            return Ok(phieuXuat);
+            return Ok(chiTietPhieuXuat);
         }
-
         // PUT: api/PhieuXuats/5
         [ResponseType(typeof(void))]
         public IHttpActionResult PutPhieuXuat(int id, PhieuXuat phieuXuat)
@@ -56,7 +74,7 @@ namespace KhoWebAPI2.Controllers
 
             try
             {
-                unitOfWork.PhieuXuatRepository.Save();
+                unitOfWork.Save();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -73,7 +91,12 @@ namespace KhoWebAPI2.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/PhieuXuats
+        private bool PhieuXuatExists(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        // POST: api/PhieuNhaps
         [ResponseType(typeof(PhieuXuat))]
         public IHttpActionResult PostPhieuXuat(PhieuXuat phieuXuat)
         {
@@ -83,14 +106,20 @@ namespace KhoWebAPI2.Controllers
             }
 
             unitOfWork.PhieuXuatRepository.Insert(phieuXuat);
-            unitOfWork.PhieuXuatRepository.Save();
+            unitOfWork.Save();
+            var phieuXuatDto = new PhieuXuatDTO
+            {
+                 NhanVienId=phieuXuat.NhanVienId,
+                TongTien = phieuXuat.TongTien
+                  
+            };
 
-            return CreatedAtRoute("DefaultApi", new { id = phieuXuat.Id }, phieuXuat);
+            return CreatedAtRoute("DefaultApi", new { id = phieuXuat.Id }, phieuXuatDto);
         }
 
-        // DELETE: api/PhieuXuats/5
-        [ResponseType(typeof(PhieuXuat))]
-        public IHttpActionResult DeletePhieuXuat(int id)
+        // DELETE: api/PhieuNhaps/5
+        [ResponseType(typeof(PhieuNhap))]
+        public IHttpActionResult DeletePhieuNhap(int id)
         {
             PhieuXuat phieuXuat = unitOfWork.PhieuXuatRepository.GetByID(id);
             if (phieuXuat == null)
@@ -99,7 +128,7 @@ namespace KhoWebAPI2.Controllers
             }
 
             unitOfWork.PhieuXuatRepository.Delete(phieuXuat);
-            unitOfWork.PhieuXuatRepository.Save();
+            unitOfWork.Save();
 
             return Ok(phieuXuat);
         }
@@ -113,10 +142,9 @@ namespace KhoWebAPI2.Controllers
             base.Dispose(disposing);
         }
 
-        private bool PhieuXuatExists(int id)
+        private bool PhieuNhapExists(int id)
         {
             return true;
         }
     }
-
 }

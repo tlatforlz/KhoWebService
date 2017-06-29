@@ -10,21 +10,27 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using KhoWebAPI2.DAL;
+using KhoWebAPI2.DTO;
 using KhoWebAPI2.Models;
 
 namespace KhoWebAPI2.Controllers
 {
-    [RoutePrefix("Sach")]
+
     public class GiaTiensController : ApiController
     {
         //private ApplicationDbContext db = new ApplicationDbContext();
         private UnitOfWord unitOfWork = new UnitOfWord();
         // GET: api/GiaTiens
-        public IEnumerable<GiaTien> GetGiaTiens()
+        public IEnumerable<GiaTienDTO> GetGiaTiens()
         {
-            return unitOfWork.GiaTienRepository.Get();
+            var giatien = from a in unitOfWork.GiaTienRepository.Get()
+                            select new GiaTienDTO
+                            {
+                                 SanPhamId=a.SanPhamId,
+                                  giaTien= a.giaTien
+                            };
+            return giatien;
         }
-        [Route]
         // GET: api/GiaTiens/5
         [ResponseType(typeof(GiaTien))]
         public IHttpActionResult GetGiaTien(int id)
@@ -56,7 +62,7 @@ namespace KhoWebAPI2.Controllers
 
             try
             {
-                unitOfWork.GiaTienRepository.Save();
+                unitOfWork.Save();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -83,7 +89,7 @@ namespace KhoWebAPI2.Controllers
             }
 
             unitOfWork.GiaTienRepository.Insert(giaTien);
-            unitOfWork.GiaTienRepository.Save();
+            unitOfWork.Save();
 
             return CreatedAtRoute("DefaultApi", new { id = giaTien.Id }, giaTien);
         }
@@ -99,7 +105,7 @@ namespace KhoWebAPI2.Controllers
             }
 
             unitOfWork.GiaTienRepository.Delete(giaTien);
-            unitOfWork.GiaTienRepository.Save();
+            unitOfWork.Save();
 
             return Ok(giaTien);
         }

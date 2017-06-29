@@ -11,8 +11,8 @@ namespace KhoWebAPI2.Migrations
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = false;
-           // AutomaticMigrationDataLossAllowed = true;
+            AutomaticMigrationsEnabled = true;
+            AutomaticMigrationDataLossAllowed = true;
         }
 
         protected override void Seed(KhoWebAPI2.Models.ApplicationDbContext context)
@@ -88,9 +88,9 @@ namespace KhoWebAPI2.Migrations
                 new PhieuXuat()
                 {
                     Id = 1,
-                     ngayNhap = DateTime.Parse("1986-2-23"),
+                     NgayXuat = DateTime.Parse("1986-2-23"),
                       NhanVienId=1,
-                        tongTien =12234
+                        TongTien =12234
                 }
             };
             PhieuXuats.ForEach(s => context.PhieuXuats.AddOrUpdate(p => p.Id, s));
@@ -100,7 +100,7 @@ namespace KhoWebAPI2.Migrations
                 new PhieuNhap()
                 {
                     Id = 1,
-                     ngayNhap = DateTime.Parse("1986-2-23"),
+                     //ngayNhap = DateTime.Parse("1986-2-23"),
                       NhanVienId=1,
                         tongTien =345545
                 }
@@ -126,7 +126,7 @@ namespace KhoWebAPI2.Migrations
                 {
                     Id = 1,
                      SanPhamId=1,
-                         PhieuNhapId=1,
+                         PhieuXuatId=1,
                           giaTien=3777000
                 }
             };

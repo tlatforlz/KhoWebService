@@ -55,7 +55,7 @@ namespace KhoWebAPI2.Controllers
 
             try
             {
-                unitOfWork.ChiTietPhieuNhapRepository.Save();
+                unitOfWork.Save();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -82,7 +82,7 @@ namespace KhoWebAPI2.Controllers
             }
 
             unitOfWork.ChiTietPhieuNhapRepository.Insert(chiTietPhieuNhap);
-            unitOfWork.ChiTietPhieuNhapRepository.Save();
+            unitOfWork.Save();
 
             return CreatedAtRoute("DefaultApi", new { id = chiTietPhieuNhap.Id }, chiTietPhieuNhap);
         }
@@ -98,7 +98,7 @@ namespace KhoWebAPI2.Controllers
             }
 
             unitOfWork.ChiTietPhieuNhapRepository.Delete(chiTietPhieuNhap);
-            unitOfWork.ChiTietPhieuNhapRepository.Save();
+            unitOfWork.Save();
 
             return Ok(chiTietPhieuNhap);
         }

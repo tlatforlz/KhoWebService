@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using KhoWebAPI2.DAL;
+using KhoWebAPI2.DTO;
 using KhoWebAPI2.Models;
 
 namespace KhoWebAPI2.Controllers
@@ -19,22 +20,37 @@ namespace KhoWebAPI2.Controllers
         //private ApplicationDbContext db = new ApplicationDbContext();
         private UnitOfWord unitOfWork = new UnitOfWord();
         // GET: api/ChiTietPhieuXuats
-        public IEnumerable<ChiTietPhieuXuat> GetChiTietPhieuXuats()
+        public IEnumerable<ChiTietPhieuXuatDTO> GetChiTietPhieuXuats()
         {
-            return unitOfWork.ChiTietPhieuXuatRepository.Get();
+            var chitietphieuxuat = from a in unitOfWork.ChiTietPhieuXuatRepository.Get()
+                                   select new ChiTietPhieuXuatDTO
+                                   {
+                                       Id = a.Id,
+                                       SanPhamId = a.SanPhamId,
+                                       PhieuXuatId = a.PhieuXuatId,
+                                       giaTien = a.giaTien
+                                   };
+            return chitietphieuxuat;
         }
 
         // GET: api/ChiTietPhieuXuats/5
-        [ResponseType(typeof(ChiTietPhieuXuat))]
+        [ResponseType(typeof(SanPhamDTO))]
         public IHttpActionResult GetChiTietPhieuXuat(int id)
         {
-            ChiTietPhieuXuat chiTietPhieuXuat = unitOfWork.ChiTietPhieuXuatRepository.GetByID(id);
+            var chiTietPhieuXuat = unitOfWork.ChiTietPhieuXuatRepository.Get(x => x.Id == id, null, "SanPham").FirstOrDefault();
+
             if (chiTietPhieuXuat == null)
             {
                 return NotFound();
             }
+            SanPhamDTO result = new SanPhamDTO()
+            {
+                giaSanPham= chiTietPhieuXuat.SanPham.giaSanPham,
+                soLuongSanPham=chiTietPhieuXuat.SanPham.soLuongSanPham,
+                tenSanPham=chiTietPhieuXuat.SanPham.tenSanPham
 
-            return Ok(chiTietPhieuXuat);
+            };
+            return Ok(result);
         }
 
         // PUT: api/ChiTietPhieuXuats/5
@@ -55,7 +71,7 @@ namespace KhoWebAPI2.Controllers
 
             try
             {
-                unitOfWork.ChiTietPhieuXuatRepository.Save();
+                unitOfWork.Save();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -82,14 +98,14 @@ namespace KhoWebAPI2.Controllers
             }
 
             unitOfWork.ChiTietPhieuXuatRepository.Insert(chiTietPhieuXuat);
-            unitOfWork.ChiTietPhieuXuatRepository.Save();
+            unitOfWork.Save();
 
             return CreatedAtRoute("DefaultApi", new { id = chiTietPhieuXuat.Id }, chiTietPhieuXuat);
         }
 
         // DELETE: api/ChiTietPhieuXuats/5
         [ResponseType(typeof(ChiTietPhieuXuat))]
-        public async Task<IHttpActionResult> DeleteChiTietPhieuXuat(int id)
+        public IHttpActionResult DeleteChiTietPhieuXuat(int id)
         {
             ChiTietPhieuXuat chiTietPhieuXuat = unitOfWork.ChiTietPhieuXuatRepository.GetByID(id);
             if (chiTietPhieuXuat == null)
@@ -98,7 +114,7 @@ namespace KhoWebAPI2.Controllers
             }
 
             unitOfWork.ChiTietPhieuXuatRepository.Delete(chiTietPhieuXuat);
-            unitOfWork.ChiTietPhieuXuatRepository.Save();
+            unitOfWork.Save();
 
             return Ok(chiTietPhieuXuat);
         }

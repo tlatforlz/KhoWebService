@@ -36,7 +36,18 @@ namespace KhoWebAPI2.Controllers
 
             return Ok(phieuNhap);
         }
+        [Route("api/PhieuNhaps/{id:int}/chiTietPhieuNhap")]
+        [ResponseType(typeof(PhieuNhap))]
+        public IHttpActionResult GetChiTietPhieuXuat(int id)
+        {
+            ChiTietPhieuNhap chiTietPhieuNhap = unitOfWork.ChiTietPhieuNhapRepository.GetByID(id);
+            if (chiTietPhieuNhap == null)
+            {
+                return NotFound();
+            }
 
+            return Ok(chiTietPhieuNhap);
+        }
         // PUT: api/PhieuNhaps/5
         [ResponseType(typeof(void))]
         public IHttpActionResult PutPhieuNhap(int id, PhieuNhap phieuNhap)
@@ -55,7 +66,7 @@ namespace KhoWebAPI2.Controllers
 
             try
             {
-                unitOfWork.PhieuNhapRepository.Save();
+                unitOfWork.Save();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -74,7 +85,7 @@ namespace KhoWebAPI2.Controllers
 
         // POST: api/PhieuNhaps
         [ResponseType(typeof(PhieuNhap))]
-        public async Task<IHttpActionResult> PostPhieuNhap(PhieuNhap phieuNhap)
+        public IHttpActionResult PostPhieuNhap(PhieuNhap phieuNhap)
         {
             if (!ModelState.IsValid)
             {
@@ -82,14 +93,14 @@ namespace KhoWebAPI2.Controllers
             }
 
             unitOfWork.PhieuNhapRepository.Insert(phieuNhap);
-            unitOfWork.PhieuNhapRepository.Save();
+            unitOfWork.Save();
 
             return CreatedAtRoute("DefaultApi", new { id = phieuNhap.Id }, phieuNhap);
         }
 
         // DELETE: api/PhieuNhaps/5
         [ResponseType(typeof(PhieuNhap))]
-        public async Task<IHttpActionResult> DeletePhieuNhap(int id)
+        public IHttpActionResult DeletePhieuNhap(int id)
         {
             PhieuNhap phieuNhap = unitOfWork.PhieuNhapRepository.GetByID(id);
             if (phieuNhap == null)
@@ -98,7 +109,7 @@ namespace KhoWebAPI2.Controllers
             }
 
             unitOfWork.PhieuNhapRepository.Delete(phieuNhap);
-            unitOfWork.PhieuNhapRepository.Save();
+            unitOfWork.Save();
 
             return Ok(phieuNhap);
         }

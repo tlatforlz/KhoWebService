@@ -64,10 +64,6 @@ namespace KhoWebAPI2.DAL
             Delete(entityToDelete);
         }
 
-        internal void Save()
-        {
-            db.SaveChanges();
-        }
 
         public virtual void Delete(TEntity entityToDelete)
         {
@@ -83,6 +79,7 @@ namespace KhoWebAPI2.DAL
             dbSet.Attach(entityToUpdate);
             db.Entry(entityToUpdate).State = EntityState.Modified;
         }
+
         private bool disposed = false;
 
         protected virtual void Dispose(bool disposing)

@@ -1,4 +1,7 @@
-﻿using System.Security.Claims;
+﻿using System;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -23,6 +26,8 @@ namespace KhoWebAPI2.Models
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)
         {
+            this.Configuration.ProxyCreationEnabled = false;
+            this.Configuration.LazyLoadingEnabled = false;
         }
         
         public static ApplicationDbContext Create()
@@ -43,5 +48,39 @@ namespace KhoWebAPI2.Models
         public System.Data.Entity.DbSet<KhoWebAPI2.Models.ChiTietPhieuXuat> ChiTietPhieuXuats { get; set; }
 
         public System.Data.Entity.DbSet<KhoWebAPI2.Models.GiaTien> GiaTiens { get; set; }
+        public object PhieuXuatDTO { get; internal set; }
+
+        public override int SaveChanges()
+        {
+            var modifiedEntries = ChangeTracker.Entries()
+                .Where(x => x.Entity is IAuditableEntity
+                    && (x.State == System.Data.Entity.EntityState.Added || x.State == System.Data.Entity.EntityState.Modified));
+
+            foreach (var entry in modifiedEntries)
+            {
+                IAuditableEntity entity = entry.Entity as IAuditableEntity;
+                if (entity != null)
+                {
+                    string identityName = Thread.CurrentPrincipal.Identity.Name;
+                    DateTime now = DateTime.UtcNow;
+
+                    if (entry.State == System.Data.Entity.EntityState.Added)
+                    {
+                       // entity.CreatedBy = identityName;
+                        entity.CreatedDate = now;
+                    }
+                    else
+                    {
+                       // base.Entry(entity).Property(x => x.CreatedBy).IsModified = false;
+                        base.Entry(entity).Property(x => x.CreatedDate).IsModified = false;
+                    }
+
+                   // entity.UpdatedBy = identityName;
+                    entity.UpdatedDate = now;
+                }
+            }
+
+            return base.SaveChanges();
+        }
     }
 }

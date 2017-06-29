@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using KhoWebAPI2.DAL;
+using KhoWebAPI2.DTO;
 using KhoWebAPI2.Models;
 
 namespace KhoWebAPI2.Controllers
@@ -20,24 +21,120 @@ namespace KhoWebAPI2.Controllers
 
         private UnitOfWord unitOfWork = new UnitOfWord();
         // GET: api/SanPhams
-        public IEnumerable<SanPham> GetSanPhams()
+        public IEnumerable<SanPhamDTO> GetSanPhams()
         {
-            return unitOfWork.SanPhamRepository.Get();
+            var sanPhamDto = from a in unitOfWork.SanPhamRepository.Get()
+                             select new SanPhamDTO()
+                             {  
+                                 Id=a.Id,
+                                 giaSanPham = a.giaSanPham,
+                                 soLuongSanPham = a.soLuongSanPham,
+                                 tenSanPham = a.tenSanPham
+                             };
+            return sanPhamDto;
         }
 
         // GET: api/SanPhams/5
-        [ResponseType(typeof(SanPham))]
+        [ResponseType(typeof(SanPhamDTO))]
         public IHttpActionResult GetSanPham(int id)
         {
-            SanPham sanPham = unitOfWork.SanPhamRepository.GetByID(id);
+            var sanPham = unitOfWork.SanPhamRepository.GetByID(id);
             if (sanPham == null)
             {
                 return NotFound();
             }
+            SanPhamDTO sanPhamDto = new SanPhamDTO
+            {
+                Id = sanPham.Id,
+                tenSanPham = sanPham.tenSanPham,
+                giaSanPham = sanPham.giaSanPham,
+                soLuongSanPham = sanPham.soLuongSanPham
+            };
 
-            return Ok(sanPham);
+            return Ok(sanPhamDto);
+        }
+        [Route("api/SanPhams/{id:int}/chiTiet")]
+        [ResponseType(typeof(SanPham))]
+        public IHttpActionResult GetChiTietPhieuNhap(int id)
+        {
+            ChiTietPhieuNhap chiTietPhieuNhap = unitOfWork.ChiTietPhieuNhapRepository.GetByID(id);
+            if (chiTietPhieuNhap == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(chiTietPhieuNhap);
+        }
+        [Route("api/SanPhams/{id:int}/chiTietPhieuXuat")]
+        [ResponseType(typeof(SanPham))]
+        public IHttpActionResult GetChiTietPhieuXuat(int id)
+        {
+            ChiTietPhieuXuat chiTietPhieuXuat = unitOfWork.ChiTietPhieuXuatRepository.GetByID(id);
+            if (chiTietPhieuXuat == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(chiTietPhieuXuat);
         }
 
+
+        [Route("api/SanPhams/{id:int}/giaTien")]
+        [ResponseType(typeof(GiaTienDTO))]
+        public IHttpActionResult GetGiaTien(int id)
+        {
+            var giaSanPham = unitOfWork.SanPhamRepository.Get(x=>x.Id==id,null,"GiaTien");
+            if (giaSanPham == null)
+            {
+                return NotFound();
+            }
+            GiaTien giaTien = new GiaTien
+            {
+                   
+            }
+
+            return Ok(giaSanPham);
+        }
+        //PUT GIA
+        [Route("api/SanPhams/{id:int}/UpdateGiaTien")]
+        [ResponseType(typeof(void))]
+        public IHttpActionResult PutGiaSanPham(int id, GiaTien giaTien)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (id != giaTien.Id)
+            {
+                return BadRequest();
+            }
+
+            unitOfWork.GiaTienRepository.Update(giaTien);
+            var giaSP = new GiaTienDTO
+            {
+                SanPhamId = giaTien.SanPhamId,
+                giaTien = giaTien.giaTien
+            };
+
+            try
+            {
+                unitOfWork.Save();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!SanPhamExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return CreatedAtRoute("DefaultApi", new { id = giaTien.Id }, giaSP);
+        }
         // PUT: api/SanPhams/5
         [ResponseType(typeof(void))]
         public IHttpActionResult PutSanPham(int id, SanPham sanPham)
@@ -56,7 +153,7 @@ namespace KhoWebAPI2.Controllers
 
             try
             {
-                unitOfWork.SanPhamRepository.Save();
+                unitOfWork.Save();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -82,10 +179,18 @@ namespace KhoWebAPI2.Controllers
                 return BadRequest(ModelState);
             }
 
+            sanPham.GiaTiens = new List<GiaTien>();
+            sanPham.GiaTiens.Add(new GiaTien() { giaTien = sanPham.giaSanPham, NgayCapNhap = DateTime.UtcNow });
             unitOfWork.SanPhamRepository.Insert(sanPham);
-            unitOfWork.SanPhamRepository.Save();
+            unitOfWork.Save();
+            var SanPhamDto = new SanPhamDTO
+            {
+                tenSanPham = sanPham.tenSanPham,
+                soLuongSanPham = sanPham.soLuongSanPham,
+                giaSanPham = sanPham.giaSanPham
 
-            return CreatedAtRoute("DefaultApi", new { id = sanPham.Id }, sanPham);
+            };
+            return CreatedAtRoute("DefaultApi", new { id = sanPham.Id }, SanPhamDto);
         }
 
         // DELETE: api/SanPhams/5
@@ -99,8 +204,7 @@ namespace KhoWebAPI2.Controllers
             }
 
             unitOfWork.SanPhamRepository.Delete(sanPham);
-            unitOfWork.SanPhamRepository.Save();
-
+            unitOfWork.Save();
             return Ok(sanPham);
         }
 

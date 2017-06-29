@@ -6,10 +6,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace KhoWebAPI2.Models
 {
-    public class NhanVien
+    public class NhanVien:Entity<int>
     {
-        [Key]
-        public int Id { get; set; }
+      //  [Key]
+       // public int Id { get; set; }
         [Required]
         public String hoNhanVien { get; set; }
         [Required]

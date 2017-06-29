@@ -5,14 +5,14 @@ using System.Web;
 using System.ComponentModel.DataAnnotations;
 namespace KhoWebAPI2.Models
 {
-    public class PhieuXuat
+    public class PhieuXuat:Entity<int>
     {
-        [Key]
-        public int Id { get; set; }
-        public DateTime ngayNhap { get; set; }
-        public double tongTien { get; set; }
+//[Key]
+      //  public int Id { get; set; }
+        public DateTime? NgayXuat { get; set; }
+        public double TongTien { get; set; }
         public int NhanVienId { get; set; }
         public NhanVien NhanVien { get; set; }
-        public virtual ICollection<ChiTietPhieuXuat> ChiTietPhieuXuats { get; set; }
+        public ICollection<ChiTietPhieuXuat> ChiTietPhieuXuats { get; set; }
     }
 }
